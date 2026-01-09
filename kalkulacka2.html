@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator2</title>
+    <link rel="stylesheet" href="https://api.ssps.cajthaml.eu/file/68f3df8a793bb6d00c5da848">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            display: flex;
+            background-color: rgb(0, 0, 0);
+            font-family: "Roboto Mono", monospace;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            min-width: 100%;
+            color: white;
+        }
+
+        .calculator-container {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr) repeat(2, 2fr);
+            grid-template-rows: 90px repeat(3, 57px) repeat(2, 73px);
+            height: auto;
+            max-width: 700px;
+            width: 100%;
+            background-color: rgb(121, 139, 155);
+            padding: 17px;
+            gap: 20px;
+            border-radius: 20px;
+        }
+
+        .calculator-container .math-symbols {
+            background-color: rgb(3, 30, 66);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+            border-radius: 10px;
+        }
+
+        .calculator-container .calculator-output {
+            background-color: rgb(60, 61, 9);
+            grid-column: 1 / -1;
+            /*AI https://chatgpt.com/share/695ebb92-136c-8001-b7cb-0a2a89080e9b*/
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 15px;
+            font-size: 35px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .calculator-container .math-symbols.special-plus {
+            grid-row: span 2;
+        }
+
+        .calculator-container div:nth-child(9),
+        /*AI https://chatgpt.com/share/695ec4d8-dc6c-8001-99e6-4c0be87112b7*/
+        .calculator-container div:nth-child(10),
+        .calculator-container div:nth-child(11),
+        .calculator-container div:nth-child(15),
+        .calculator-container div:nth-child(16),
+        .calculator-container div:nth-child(17),
+        .calculator-container div:nth-child(21),
+        .calculator-container div:nth-child(22),
+        .calculator-container div:nth-child(23),
+        .calculator-container div:nth-child(27),
+        .calculator-container div:nth-child(28),
+        .calculator-container div:nth-child(29) {
+            background: rgb(19, 2, 41);
+        }
+
+        .calculator-container div:nth-child(30) {
+            background: linear-gradient(to left, rgb(3, 30, 66)15%, rgb(60, 61, 9));
+        }
+
+        .calculator-container div:nth-child(30):hover {
+            background: linear-gradient(to right, rgb(3, 30, 66)15%, rgb(60, 61, 9));
+            transform: skewx(-15deg);
+        }
+
+        .math-symbols:hover {
+            transform: scale(1.1);
+            filter: brightness(1.5);
+        }
+    </style>
+
+</head>
+
+<body>
+    <main class="calculator-container">
+        <output class="calculator-output" id="display">0</output>
+
+        <div class="math-symbols">M/EX</div>
+        <div class="math-symbols">M+</div>
+        <div class="math-symbols">M-</div>
+        <div class="math-symbols">MR</div>
+        <div class="math-symbols">MC</div>
+        <div class="math-symbols">GT</div>
+
+        <div class="math-symbols" data-value="AC">AC</div>
+        <div class="math-symbols" data-value="7">7</div>
+        <div class="math-symbols" data-value="8">8</div>
+        <div class="math-symbols" data-value="9">9</div>
+        <div class="math-symbols">&#x0025;</div>
+        <div class="math-symbols">&#x221A;</div>
+
+        <div class="math-symbols">&#x00B1;</div>
+        <div class="math-symbols" data-value="4">4</div>
+        <div class="math-symbols" data-value="5">5</div>
+        <div class="math-symbols" data-value="6">6</div>
+        <div class="math-symbols" data-value="*">&#x00D7;</div>
+        <div class="math-symbols" data-value="/">&#x00F7;</div>
+
+        <div class="math-symbols">&#x27A4;</div>
+        <div class="math-symbols" data-value="1">1</div>
+        <div class="math-symbols" data-value="2">2</div>
+        <div class="math-symbols" data-value="3">3</div>
+        <div class="math-symbols special-plus" data-value="+">&#x2B;</div>
+        <div class="math-symbols" data-value="-">&#x2212;</div>
+
+        <div class="math-symbols">C</div>
+        <div class="math-symbols">0</div>
+        <div class="math-symbols">00</div>
+        <div class="math-symbols" data-value=".">&#x002E;</div>
+        <div class="math-symbols" data-value="=">&#x003D;</div>
+    </main>
+
+    <script> /*https://chatgpt.com/share/69613385-9120-8001-ac77-ca94839aad0f*/
+        const display = document.getElementById("display");
+        const buttons = document.querySelectorAll(".math-symbols");
+
+        let expression = "";
+
+        buttons.forEach(button => {
+            button.addEventListener("click", () => {
+                let value = button.textContent.trim();
+
+                if (value === "AC" || value === "C") {
+                    expression = "";
+                    display.textContent = "0";
+                    return;
+                }
+
+                if (value === "=") {
+                    try {
+                        let calc = expression
+                            .replace(/×/g, "*")
+                            .replace(/÷/g, "/")
+                            .replace(/−/g, "-");
+
+                        const result = eval(calc);
+                        display.textContent = result;
+                        expression = result.toString();
+                    } catch {
+                        display.textContent = "Error";
+                        expression = "";
+                    }
+                    return;
+                }
+
+                const blocked = ["M+", "M-", "MR", "MC", "GT", "√", "%", "±", "➤"];
+                if (blocked.includes(value)) return;
+
+                expression += value;
+                display.textContent = expression;
+            });
+        });
+    </script>
+
+
+    <!--https://www.w3schools.com/cssref/css_entities.php#gsc.tab=0
+    https://chatgpt.com/share/69498035-ae50-8001-8a05-fc71d7796e68
+    https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/gradient/linear-gradient
+    https://chatgpt.com/share/696126d4-93d4-8001-9e44-e4e1e586934c
+    -->
+</body>
+
+</html>
